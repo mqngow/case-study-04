@@ -4,7 +4,7 @@ from pydantic import BaseModel, Field, EmailStr, validator
 import hashlib
 import secrets
 
-class SurveySubmission(BaseModel)
+class SurveySubmission(BaseModel):
     name: str = Field(..., min_length=1, max_length=100)
     email: EmailStr
     age: int = Field(..., ge=13, le=120)
