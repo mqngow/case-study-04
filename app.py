@@ -2,16 +2,14 @@ from datetime import datetime, timezone
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from pydantic import ValidationError
-from models import SurveySubmission, StoredSurveyRecord
+from models import SurveySubmission
 from storage import append_json_line
 
 app = Flask(__name__)
-# Allow cross-origin requests so the static HTML can POST from localhost or file://
 CORS(app, resources={r"/v1/*": {"origins": "*"}})
 
 @app.route("/ping", methods=["GET"])
 def ping():
-    """Simple health check endpoint."""
     return jsonify({
         "status": "ok",
         "message": "API is alive",
@@ -29,8 +27,7 @@ def submit_survey():
     except ValidationError as ve:
         return jsonify({"error": "validation_error", "detail": ve.errors()}), 422
 
-    record = StoredSurveyRecord(
-        **submission.dict(),
+    record = submission.to_storable_record(
         received_at=datetime.now(timezone.utc),
         ip=request.headers.get("X-Forwarded-For", request.remote_addr or "")
     )
@@ -38,4 +35,4 @@ def submit_survey():
     return jsonify({"status": "ok"}), 201
 
 if __name__ == "__main__":
-    app.run(port=0, debug=True)
+    app.run(host="127.0.0.1", port=5000, debug=True)
