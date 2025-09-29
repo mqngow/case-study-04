@@ -32,8 +32,8 @@ class SurveySubmission(BaseModel):
         submission_id = self._sha256(secrets.token_hex(32))
         return StoredSurveyRecord(
             name=self.name,
-            email_hash=email_hash,
-            age_hash=age_hash,
+            hashed_email=email_hash,
+            hashed_age=age_hash,
             consent=self.consent,
             rating=self.rating,
             comments=self.comments,
@@ -46,8 +46,8 @@ class SurveySubmission(BaseModel):
 
 class StoredSurveyRecord(BaseModel):
     name: str
-    email_hash: str
-    age_hash: str
+    hashed_email: str
+    hashed_age: str
     consent: bool
     rating: int
     comments: Optional[str] = None
